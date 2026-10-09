@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- Private admin page: not linked from the invitation, kept out of search engines -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Admin · RSVP Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=Jost:wght@300;400;500;600&amp;family=Parisienne&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <!-- Admin Data Analytics for the wedding invitation's RSVPs.
+       Nothing here holds any data: every figure is read, after sign-in, from
+       the "RSVP" tab of the "Wedding RSVP 2026" Google Sheet through the
+       invitation's Apps Script (admin password checked there). -->
+
+  <!-- Shared art, from the invitation: its butterfly, blossom line-art and a few UI icons -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="ui-fly-fill" gradientUnits="userSpaceOnUse" cx="33" cy="27" r="29">
+        <stop offset="0" stop-color="#7a8fbd" />
+        <stop offset="0.24" stop-color="#3c5185" />
+        <stop offset="0.56" stop-color="#21305c" />
+        <stop offset="1" stop-color="#131b39" />
+      </radialGradient>
+      <path id="ui-fly-fore" d="M33 22.6 C36.5 14.5 45 7.6 57.6 4.6 C60 4.1 61.6 5.2 61 7.6 C59.2 13.6 55.2 20.6 48 25.8 C43 27.6 37.6 27.6 33.4 26.6 Z" />
+      <path id="ui-fly-hind" d="M33.4 28.2 C39 27 46.6 27.6 50.8 31.4 C53.8 34.4 53.2 39.6 50.2 42.8 Q49.6 45.6 47 46.6 Q45.6 49.6 42.6 50.2 Q40.2 52.8 37.6 51.2 C35 48 33.8 40 33.2 31 Z" />
+      <g id="ui-fly-wing-art">
+        <use href="#ui-fly-hind" fill="url(#ui-fly-fill)" />
+        <use href="#ui-fly-fore" fill="url(#ui-fly-fill)" />
+        <g fill="#eceff6" fill-opacity="0.88">
+          <circle cx="54.6" cy="8.6" r="0.95" /><circle cx="52.3" cy="10.5" r="0.6" />
+          <circle cx="59.1" cy="10.6" r="0.6" /><circle cx="57.3" cy="14.8" r="0.55" />
+          <circle cx="54.9" cy="18.7" r="0.5" /><circle cx="51.9" cy="21.9" r="0.45" />
+        </g>
+      </g>
+      <symbol id="ui-fly-wing-r" viewBox="0 0 64 56"><use href="#ui-fly-wing-art" /></symbol>
+      <symbol id="ui-fly-wing-l" viewBox="0 0 64 56"><use href="#ui-fly-wing-art" transform="matrix(-1 0 0 1 64 0)" /></symbol>
+      <symbol id="ui-fly-body" viewBox="0 0 64 56">
+        <g fill="#151d38">
+          <path d="M32 26.5 C32.8 26.5 33 29 32.9 33 L32.6 41.5 C32.5 43.8 32.3 45.2 32 45.2 C31.7 45.2 31.5 43.8 31.4 41.5 L31.1 33 C31 29 31.2 26.5 32 26.5 Z" />
+          <ellipse cx="32" cy="23.6" rx="1.45" ry="3.3" />
+          <circle cx="32" cy="19.6" r="1.2" />
+        </g>
+        <path fill="none" stroke="#151d38" stroke-width="0.45" stroke-linecap="round" d="M31.6 18.6 C30.4 14.6 28.4 11.4 26 9.6 M32.4 18.6 C33.6 14.6 35.6 11.4 38 9.6" />
+      </symbol>
+      <path id="ui-leaf" d="M0 0 C6 -5.5 16 -6.5 24 0 C16 6.5 6 5.5 0 0 Z M1.5 0 L19 0" />
+      <g id="ui-bloom">
+        <ellipse cx="0" cy="-4.2" rx="2.3" ry="3.8" />
+        <ellipse cx="0" cy="-4.2" rx="2.3" ry="3.8" transform="rotate(72)" />
+        <ellipse cx="0" cy="-4.2" rx="2.3" ry="3.8" transform="rotate(144)" />
+        <ellipse cx="0" cy="-4.2" rx="2.3" ry="3.8" transform="rotate(216)" />
+        <ellipse cx="0" cy="-4.2" rx="2.3" ry="3.8" transform="rotate(288)" />
+        <circle r="1.4" />
+      </g>
+      <symbol id="ui-blossom" viewBox="0 0 90 100">
+        <g fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+          <path fill="none" d="M45 98 C44 78 39 60 28 42" />
+          <path fill="none" d="M45 98 C47 76 53 56 64 36" />
+          <path fill="none" d="M45 98 C45 82 46 68 47 54" />
+          <use href="#ui-leaf" transform="translate(44 84) rotate(-150) scale(0.55)" />
+          <use href="#ui-leaf" transform="translate(47 78) rotate(-30) scale(0.5)" />
+          <use href="#ui-leaf" transform="translate(37 62) rotate(-160) scale(0.4)" />
+          <use href="#ui-leaf" transform="translate(55 58) rotate(-20) scale(0.4)" />
+          <use href="#ui-bloom" transform="translate(27 39) scale(0.85)" />
+          <use href="#ui-bloom" transform="translate(65 33) scale(1)" />
+          <use href="#ui-bloom" transform="translate(47 51) scale(0.6)" />
+        </g>
+      </symbol>
+      <symbol id="i-overview" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6" /><rect x="13.5" y="3.5" width="7" height="7" rx="1.6" /><rect x="3.5" y="13.5" width="7" height="7" rx="1.6" /><rect x="13.5" y="13.5" width="7" height="7" rx="1.6" /></g></symbol>
+      <symbol id="i-charts" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 20h16" /><path d="M7 16.5v-5M12 16.5V6.5M17 16.5v-8" /></g></symbol>
+      <symbol id="i-records" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2" /><path d="M3.5 9.5h17M9 9.5v10" /></g></symbol>
+      <symbol id="i-ucapan" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4.5 5.5h15a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-4.5 3.5v-3.5h-1a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" /><path stroke-linecap="round" d="M8 9.5h8M8 12.5h5" /></g></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" /><path d="M19.5 4.5v4h-4" /></g></symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.5H6.5a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1H14" /><path d="M10.5 12h10M17 8.5l3.5 3.5-3.5 3.5" /></g></symbol>
+    </defs>
+  </svg>
+
+  <!-- Admin access: a 6-digit PIN, checked only by the Apps Script (never here) -->
+  <main class="login" id="login">
+    <div class="flutter flutter--login" aria-hidden="true"></div>
+    <form class="login__card" id="loginForm" novalidate autocomplete="off">
+      <p class="login__names">Asyiqin <span>&amp;</span> Fikri</p>
+      <h1 class="login__title">Admin Access</h1>
+      <p class="login__sub">Enter your 6-digit PIN to access RSVP analytics.</p>
+      <svg class="flourish" viewBox="0 0 120 12" aria-hidden="true"><path d="M2 6h46M72 6h46M60 1.5 64.5 6 60 10.5 55.5 6Z" /></svg>
+      <fieldset class="pin" id="pin" aria-describedby="loginMsg">
+        <legend class="visually-hidden">6-digit PIN</legend>
+        <input class="pin__box" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 1 of 6" />
+        <input class="pin__box" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 2 of 6" />
+        <input class="pin__box" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 3 of 6" />
+        <input class="pin__box" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 4 of 6" />
+        <input class="pin__box" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 5 of 6" />
+        <input class="pin__box" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="PIN digit 6 of 6" />
+      </fieldset>
+      <button class="btn btn--primary" type="submit" id="loginBtn" disabled>
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="loginBtnLabel">Access Dashboard</span>
+      </button>
+      <p class="login__msg" id="loginMsg" role="alert" aria-live="assertive" hidden></p>
+    </form>
+  </main>
+
+  <!-- Dashboard: shown only after a successful sign-in -->
+  <div class="dash" id="dash" hidden>
+    <!-- Navigation: a sidebar on wide screens, a top bar on tablets and phones -->
+    <aside class="side" aria-label="Dashboard">
+      <div class="side__brand">
+        <svg class="side__blossom" aria-hidden="true"><use href="#ui-blossom" /></svg>
+        <p class="eyebrow side__eyebrow">RSVP Analytics</p>
+        <p class="side__names">Asyiqin <span>&amp;</span> Fikri</p>
+        <p class="side__date">15 · 11 · 2026</p>
+      </div>
+      <nav class="side__nav" aria-label="Dashboard sections">
+        <a class="nav-link" href="#overview"><svg aria-hidden="true"><use href="#i-overview" /></svg><span>Overview</span></a>
+        <a class="nav-link" href="#charts"><svg aria-hidden="true"><use href="#i-charts" /></svg><span>Charts</span></a>
+        <a class="nav-link" href="#records"><svg aria-hidden="true"><use href="#i-records" /></svg><span>Records</span></a>
+        <a class="nav-link" href="#ucapan"><svg aria-hidden="true"><use href="#i-ucapan" /></svg><span>Ucapan</span></a>
+      </nav>
+      <!-- the free space between the menu and the status: the only place the sidebar's butterflies fly -->
+      <div class="flutter flutter--side" aria-hidden="true"></div>
+      <div class="side__status" id="sideStatus">
+        <span class="status-dot" aria-hidden="true"></span>
+        <p class="side__status-text">
+          <span class="side__label">Last refreshed</span>
+          <time class="side__time" id="updated" aria-live="polite">—</time>
+          <span class="side__ago" id="updatedAgo"></span>
+        </p>
+      </div>
+      <div class="side__actions">
+        <button class="btn btn--soft" id="refreshBtn" type="button" aria-label="Refresh data from the Google Sheet">
+          <svg class="btn__icon" aria-hidden="true"><use href="#i-refresh" /></svg>
+          <span id="refreshBtnLabel">Refresh</span>
+        </button>
+        <button class="btn btn--logout" id="logoutBtn" type="button">
+          <svg class="btn__icon" aria-hidden="true"><use href="#i-logout" /></svg>
+          <span>Log out</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="dash__body">
+    <main class="dash__main">
+      <header class="page-head">
+        <div>
+          <p class="eyebrow">Wedding RSVP Dashboard</p>
+          <h1 class="page-head__title">Nur Asyiqin &amp; Ahmad Fikri</h1>
+          <p class="page-head__sub">Sunday, 15 November 2026 · Casa Bianca Villa, Kluang</p>
+        </div>
+        <svg class="page-head__blossom" aria-hidden="true"><use href="#ui-blossom" /></svg>
+      </header>
+
+      <p class="banner" id="banner" role="alert" hidden></p>
+
+      <!-- Overview: every figure is worked out from the valid RSVP records read
+           live from the Google Sheet (and the limit the Apps Script enforces) -->
+      <section class="overview" id="overview" aria-labelledby="overviewTitle">
+        <h2 class="section-title" id="overviewTitle">Overview</h2>
+        <div class="kpis">
+          <article class="kpi kpi--lead"><p class="kpi__label">Total RSVP Submissions</p><p class="kpi__value" id="kTotal">–</p><p class="kpi__note" id="kTotalNote">valid records saved in the sheet</p></article>
+          <article class="kpi"><p class="kpi__label">Attending</p><p class="kpi__value" id="kHadir">–</p><p class="kpi__note" id="kHadirNote">marked Hadir</p></article>
+          <article class="kpi"><p class="kpi__label">Not Attending</p><p class="kpi__value" id="kTidak">–</p><p class="kpi__note" id="kTidakNote">marked Tidak Hadir</p></article>
+          <article class="kpi"><p class="kpi__label">Expected Attendees</p><p class="kpi__value" id="kGuests">–</p><p class="kpi__note">people, from attending RSVPs</p></article>
+          <article class="kpi"><p class="kpi__label">Total Adults</p><p class="kpi__value" id="kAdults">–</p><p class="kpi__note">attending · 13 years &amp; above</p></article>
+          <article class="kpi"><p class="kpi__label">Total Children</p><p class="kpi__value" id="kChildren">–</p><p class="kpi__note">attending · 0 – 12 years</p></article>
+          <article class="kpi kpi--capacity">
+            <p class="kpi__label">RSVP Capacity</p>
+            <p class="kpi__value" id="kCapacity">–</p>
+            <div class="meter" role="progressbar" aria-label="RSVP capacity used" aria-valuemin="0" id="qMeter"><span class="meter__fill" id="qFill"></span></div>
+            <p class="kpi__note" id="kCapacityNote"></p>
+          </article>
+          <article class="kpi"><p class="kpi__label">Remaining RSVP Slots</p><p class="kpi__value" id="kLeft">–</p><p class="kpi__note" id="kLeftNote"></p></article>
+        </div>
+      </section>
+
+      <!-- Data visualization: drawn from the same records as the overview and
+           redrawn on every refresh. Hover, tap or tab to a mark for details. -->
+      <section class="viz" id="charts" aria-labelledby="vizTitle">
+        <h2 class="section-title" id="vizTitle">Charts</h2>
+        <div class="grid">
+          <article class="card card--wide">
+            <div class="card__head">
+              <h3 class="card__title">RSVP Capacity Progress</h3>
+              <p class="card__figure" id="capFigure"></p>
+            </div>
+            <p class="card__sub" id="capSub">Accepted submissions out of the submission limit</p>
+            <div class="progress" id="capacityChart"></div>
+          </article>
+
+          <article class="card">
+            <h3 class="card__title">Attendance Breakdown</h3>
+            <p class="card__sub">RSVP submissions marked Hadir and Tidak Hadir</p>
+            <div class="donut-wrap">
+              <svg class="donut" id="attendanceChart" viewBox="0 0 120 120" role="img" aria-label="Attendance breakdown"></svg>
+              <ul class="legend" id="attendanceLegend"></ul>
+            </div>
+            <p class="card__note" id="attendanceNote" hidden></p>
+          </article>
+
+          <article class="card">
+            <h3 class="card__title">Guest Attendance Summary</h3>
+            <p class="card__sub">Attending vs not attending RSVP submissions</p>
+            <ul class="legend legend--inline" id="summaryLegend"></ul>
+            <div class="chart" id="summaryChart"></div>
+            <p class="card__note" id="summaryNote" hidden></p>
+          </article>
+
+          <article class="card">
+            <h3 class="card__title">Adults vs Children</h3>
+            <p class="card__sub">Guests from attending RSVPs</p>
+            <ul class="legend legend--inline" id="ageLegend"></ul>
+            <div class="chart" id="ageChart"></div>
+            <p class="card__note" id="ageNote" hidden></p>
+          </article>
+
+          <article class="card card--wide">
+            <h3 class="card__title">RSVP Submission Trend</h3>
+            <p class="card__sub">Submissions per day, from each RSVP's timestamp in the sheet (Malaysia time)</p>
+            <ul class="legend legend--inline" id="trendLegend"></ul>
+            <div class="chart" id="trendChart"></div>
+            <p class="card__note" id="trendNote" hidden></p>
+          </article>
+        </div>
+      </section>
+
+      <!-- RSVP records: only ever filled after sign-in, from the authenticated
+           "adminData" request; cleared again on sign-out -->
+      <section class="records-section" id="records" aria-labelledby="recordsSectionTitle">
+        <h2 class="section-title" id="recordsSectionTitle">Records</h2>
+        <div class="card card--table">
+        <div class="table-head">
+          <div>
+            <h3 class="card__title" id="recordsTitle">RSVP Records <span class="count-pill" id="recordsCount"></span></h3>
+            <p class="card__sub" id="recordsSummary" aria-live="polite"></p>
+          </div>
+          <div class="table-head__actions">
+            <button class="btn btn--ghost btn--sm" id="exportBtn" type="button">Export CSV</button>
+            <button class="btn btn--primary btn--sm btn--auto" id="recordsRefresh" type="button">
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="recordsRefreshLabel">Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <label class="toolbar__search">
+            <span class="visually-hidden">Search by guest name</span>
+            <input class="input input--sm" id="search" type="search" placeholder="Search by guest name…" autocomplete="off" />
+          </label>
+          <label class="toolbar__field">
+            <span class="toolbar__label">Attendance</span>
+            <select class="input input--sm" id="filter">
+              <option value="">All</option>
+              <option value="Hadir">Hadir</option>
+              <option value="Tidak Hadir">Tidak Hadir</option>
+            </select>
+          </label>
+          <label class="toolbar__field toolbar__field--sort">
+            <span class="toolbar__label">Sort by</span>
+            <select class="input input--sm" id="sortSelect">
+              <option value="timestamp:desc">Newest first</option>
+              <option value="timestamp:asc">Oldest first</option>
+              <option value="name:asc">Name A–Z</option>
+              <option value="name:desc">Name Z–A</option>
+              <option value="attendance:asc">Hadir first</option>
+              <option value="attendance:desc">Tidak Hadir first</option>
+              <option value="total:desc">Most guests</option>
+              <option value="total:asc">Fewest guests</option>
+            </select>
+          </label>
+          <label class="toolbar__field">
+            <span class="toolbar__label">Per page</span>
+            <select class="input input--sm" id="pageSize">
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="table-scroll">
+          <table class="records" id="recordsTable">
+            <thead>
+              <tr>
+                <th scope="col" class="col-no">No.</th>
+                <th scope="col" class="col-name" data-col="name"><button type="button" data-sort="name">Guest Name</button></th>
+                <th scope="col" class="col-att" data-col="attendance"><button type="button" data-sort="attendance">Attendance</button></th>
+                <th scope="col" class="col-num">Adults</th>
+                <th scope="col" class="col-num">Children</th>
+                <th scope="col" class="col-num" data-col="total"><button type="button" data-sort="total">Total Guests</button></th>
+                <th scope="col" class="col-wish">Greeting</th>
+                <th scope="col" class="col-date" data-col="timestamp"><button type="button" data-sort="timestamp">Submission Date</button></th>
+              </tr>
+            </thead>
+            <tbody id="recordsBody"></tbody>
+          </table>
+        </div>
+        <div class="records-empty" id="recordsEmptyWrap">
+          <p class="empty" id="recordsEmpty" hidden></p>
+          <button class="link-btn" id="recordsClear" type="button" hidden>Clear search and filter</button>
+        </div>
+        <nav class="pager" id="pager" aria-label="RSVP records pages" hidden></nav>
+        </div>
+      </section>
+
+      <!-- Ucapan: read-only, from the Ucapan column of the valid RSVP records
+           (signed-in admins only; cleared on sign-out) -->
+      <section class="ucapan" id="ucapan" aria-labelledby="ucapanTitle">
+        <h2 class="section-title" id="ucapanTitle">Ucapan</h2>
+        <div class="kpis kpis--3">
+          <article class="kpi kpi--lead"><p class="kpi__label">With Greeting</p><p class="kpi__value" id="uWith">–</p><p class="kpi__note">RSVP records with an ucapan</p></article>
+          <article class="kpi"><p class="kpi__label">Without Greeting</p><p class="kpi__value" id="uWithout">–</p><p class="kpi__note">RSVP records with no ucapan</p></article>
+          <article class="kpi kpi--capacity">
+            <p class="kpi__label">Greeting Rate</p>
+            <p class="kpi__value" id="uRate">–</p>
+            <div class="meter" role="progressbar" aria-label="Submissions containing a greeting" aria-valuemin="0" aria-valuemax="100" id="uMeter"><span class="meter__fill" id="uFill"></span></div>
+            <p class="kpi__note" id="uRateNote"></p>
+          </article>
+        </div>
+
+        <article class="card" aria-labelledby="wishesTitle">
+          <div class="table-head">
+            <div>
+              <h3 class="card__title" id="wishesTitle">Greetings <span class="count-pill" id="wishesCount"></span></h3>
+              <p class="card__sub" id="wishesSummary" aria-live="polite"></p>
+            </div>
+          </div>
+          <div class="toolbar">
+            <label class="toolbar__search">
+              <span class="visually-hidden">Search greetings or guest names</span>
+              <input class="input input--sm" id="wishSearch" type="search" placeholder="Search greetings or guest names…" autocomplete="off" />
+            </label>
+            <label class="toolbar__field toolbar__field--sort">
+              <span class="toolbar__label">Sort by</span>
+              <select class="input input--sm" id="wishSort">
+                <option value="new">Newest first</option>
+                <option value="old">Oldest first</option>
+                <option value="name">Guest name A–Z</option>
+              </select>
+            </label>
+          </div>
+          <ol class="wishes" id="wishesList"></ol>
+          <div class="records-empty">
+            <p class="empty" id="wishesEmpty" hidden></p>
+            <button class="link-btn" id="wishesClear" type="button" hidden>Clear search</button>
+          </div>
+          <div class="wishes-more">
+            <button class="btn btn--ghost btn--sm" id="wishesMore" type="button" hidden></button>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p id="sourceNote">Read live from the “Wedding RSVP 2026” Google Sheet (RSVP tab).</p>
+      <p>Read-only · nothing is stored on this page.</p>
+    </footer>
+    </div>
+  </div>
+
+  <!-- A guest's full greeting -->
+  <dialog class="modal" id="greetingModal" aria-labelledby="greetingName">
+    <div class="modal__card">
+      <button class="modal__close" id="greetingClose" type="button" aria-label="Close">&times;</button>
+      <p class="eyebrow">Greeting from</p>
+      <h3 class="modal__name" id="greetingName"></h3>
+      <p class="modal__meta" id="greetingMeta"></p>
+      <p class="modal__text" id="greetingText"></p>
+      <button class="btn btn--primary" id="greetingDone" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <!-- One shared tooltip for every chart -->
+  <div class="tip" id="chartTip" role="tooltip" hidden></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
